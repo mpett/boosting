@@ -31,7 +31,8 @@ from matplotlib.colors import ColorConverter
 # out: prior - C x 1 vector of class priors
 def computePrior(labels,W=None):
     # Your code here
-    return prior
+    # return prior
+    return 0
 
 # Note that you do not need to handle the W argument for this part
 # in:      X - N x d matrix of N data points
@@ -40,7 +41,27 @@ def computePrior(labels,W=None):
 #      sigma - d x d x C matrix of class covariances
 def mlParams(X,labels,W=None):
     # Your code here
-    return mu, sigma
+    C = len(set(labels))
+    N = X.shape[0]
+    d = X.shape[1]
+    mu = np.empty((C, d))
+    sigma = np.empty((d,d,C))
+    print(labels)
+    for k in range(C):
+        k_indices = np.where(labels==k)
+        N_k = len(k_indices)
+
+
+
+    print(sigma)
+    print(X.shape)
+    print(labels.shape)
+    print("----------")
+
+    print(mu.shape)
+    print(sigma.shape)
+    # return mu, sigma
+    return []
 
 # in:      X - N x d matrix of M data points
 #      prior - C x 1 vector of class priors
@@ -61,8 +82,9 @@ def classify(X,prior,mu,sigma,covdiag=True):
 # Call `genBlobs` and `plotGaussian` to verify your estimates.
 
 X, labels = genBlobs(centers=5)
-mu, sigma = mlParams(X,labels)
-plotGaussian(X,labels,mu,sigma)
+mlParams(X,labels)
+#mu, sigma = mlParams(X,labels)
+#plotGaussian(X,labels,mu,sigma)
 
 
 # ## Boosting functions to implement
@@ -78,7 +100,8 @@ plotGaussian(X,labels,mu,sigma)
 #      alphas - T x 1 vector of vote weights
 def trainBoost(X,labels,T=5,covdiag=True):
     # Your code here
-    return priors,mus,sigmas,alphas
+    #return priors,mus,sigmas,alphas
+    return 0
 
 # in:       X - N x d matrix of N data points
 #      priors - length T list of prior as above
@@ -88,7 +111,8 @@ def trainBoost(X,labels,T=5,covdiag=True):
 # out:  yPred - N x 1 class predictions for test points
 def classifyBoost(X,priors,mus,sigmas,alphas,covdiag=True):
     # Your code here
-    return c
+    # return c
+    return 0
 
 
 # ## Define our testing function
@@ -206,5 +230,5 @@ def plotBoundary(dataset='iris',split=0.7,doboost=False,boostiter=5,covdiag=True
 
 # Example usage of the functions
 
-testClassifier(dataset='iris',split=0.7,doboost=False,boostiter=5,covdiag=True)
-plotBoundary(dataset='iris',split=0.7,doboost=False,boostiter=5,covdiag=True)
+#testClassifier(dataset='iris',split=0.7,doboost=False,boostiter=5,covdiag=True)
+#plotBoundary(dataset='iris',split=0.7,doboost=False,boostiter=5,covdiag=True)
