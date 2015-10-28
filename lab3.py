@@ -39,29 +39,52 @@ def computePrior(labels,W=None):
 #     labels - N x 1 vector of class labels
 # out:    mu - C x d matrix of class means
 #      sigma - d x d x C matrix of class covariances
+# Sigma dimensions are bullshit
 def mlParams(X,labels,W=None):
     # Your code here
-    C = len(set(labels))
-    N = X.shape[0]
-    d = X.shape[1]
-    mu = np.empty((C, d))
-    sigma = np.empty((d,d,C))
-    print(labels)
-    for k in range(C):
-        k_indices = np.where(labels==k)
-        N_k = len(k_indices)
+    N, d = X.shape
+    C = len(np.unique(labels))
+    mu = np.zeros((C,d))
+    sigma = np.zeros((C,d,d))
+    div = np.zeros((C,1))
+    if W is None:
+    #normal
+        #normalizing vector
+        norm = np.zeros((C,), dtype=np.int)
 
+        #mu computation
+        for i in range(N):
+            mu[labels[i]] += X[i]
+            norm[labels[i]] += 1
+        mu = np.divide(mu, (np.reshape(norm, (1,C)).T))
 
+        #sigma computation
+        for i in range(N):
+            diff = np.reshape((X[i]-mu[labels[i]]), (1,d))
+            sigma[labels[i]] += np.dot(diff.T,diff)
 
-    print(sigma)
-    print(X.shape)
-    print(labels.shape)
-    print("----------")
+        for k in range(C):
+            sigma[k] = np.divide(sigma[k], norm[k])
+    else:
+    #boosting
+        #mu computation
+        for i in range(N):
+            mu[labels[i]] += W[i]*X[i]
+            div[labels[i]] += W[i]
+
+        for k in range(C):
+            mu[k] = np.divide(mu[k], div[k])
+        #sigma computation
+        for i in range(N):
+            diff =  np.reshape((X[i]-mu[labels[i]]), (1,d))
+            sigma[labels[i]] += np.dot(diff.T,diff) * W[i]
+
+        for k in range(C):
+            sigma[k] = np.divide(sigma[k], div[k])
 
     print(mu.shape)
     print(sigma.shape)
-    # return mu, sigma
-    return []
+    return mu, sigma
 
 # in:      X - N x d matrix of M data points
 #      prior - C x 1 vector of class priors
@@ -215,7 +238,7 @@ def plotBoundary(dataset='iris',split=0.7,doboost=False,boostiter=5,covdiag=True
         try:
             CS = plt.contour(xRange,yRange,(grid==c).astype(float),15,linewidths=0.25,colors=conv.to_rgba_array(color))
         except ValueError:
-            pass   
+            pass
         xc = pX[py == c, :]
         plt.scatter(xc[:,0],xc[:,1],marker='o',c=color,s=40,alpha=0.5)
 
